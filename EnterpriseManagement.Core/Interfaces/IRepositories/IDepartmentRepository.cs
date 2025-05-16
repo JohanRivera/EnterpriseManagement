@@ -2,8 +2,5 @@
 
 namespace EnterpriseManagement.Core.Interfaces.IRepositories
 {
-    public interface IDepartmentRepository : IBaseRepository<Department>
-    {
-        Task<Department?> GetWithEmployeesAsync(int id);
-    }
+    public interface IDepartmentRepository : IBaseRepository<Department> { }
 }
