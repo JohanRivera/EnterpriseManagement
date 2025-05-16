@@ -1,12 +1,16 @@
-﻿using EnterpriseManagement.Core.Entities.Enumarators;
+﻿using EnterpriseManagement.Core.Entities.Auth;
+using EnterpriseManagement.Core.Entities.Enumarators;
 using EnterpriseManagement.Core.Entities.General;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
 
 namespace EnterpriseManagement.Infrastructure.Persistence
 {
     public class DbInitializer
     {
-        public static async Task SeedAsync(AppDbContext context)
+        public static async Task SeedAsync(AppDbContext context, IServiceProvider services)
         {
             // Aplica migraciones pendientes (opcional)
             await context.Database.MigrateAsync();
@@ -76,6 +80,20 @@ namespace EnterpriseManagement.Infrastructure.Persistence
 
                 context.Employees.AddRange(employees);
                 await context.SaveChangesAsync();
+            }
+
+
+            var userManager = services.GetRequiredService<UserManager<AppUser>>();
+
+            if (await userManager.FindByNameAsync("admin") == null)
+            {
+                var user = new AppUser
+                {
+                    UserName = "admin",
+                    Email = "admin@example.com",
+                    FullName = "Admin"
+                };
+                await userManager.CreateAsync(user, "Admin123*");
             }
         }
     }

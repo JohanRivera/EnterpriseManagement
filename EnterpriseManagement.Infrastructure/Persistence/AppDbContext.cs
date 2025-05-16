@@ -1,9 +1,11 @@
-﻿using EnterpriseManagement.Core.Entities.General;
+﻿using EnterpriseManagement.Core.Entities.Auth;
+using EnterpriseManagement.Core.Entities.General;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EnterpriseManagement.Infrastructure.Persistence
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
