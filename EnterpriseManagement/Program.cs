@@ -1,3 +1,9 @@
+using EnterpriseManagement.Core.Interfaces.IRepositories;
+using EnterpriseManagement.Infrastructure.Persistence;
+using EnterpriseManagement.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using System;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,7 +13,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Agregar contexto base datos
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 var app = builder.Build();
+
+// Insertar datos iniciales a la base de datos
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await DbInitializer.SeedAsync(dbContext);
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -11,5 +11,15 @@ namespace EnterpriseManagement.Core.Entities.General
         public int DepartmentId { get; set; }
         public Department Department { get; set; }
 
+
+        public decimal CalculateSalary()
+        {
+            return Position switch
+            {
+                JobPosition.Developer => Salary * 1.10m, // 10% bono
+                JobPosition.Manager => Salary * 1.20m,   // 20% bono
+                _ => Salary                              // HR y Sales: fijo
+            };
+        }
     }
 }
