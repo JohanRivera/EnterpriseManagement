@@ -1,6 +1,7 @@
 using EnterpriseManagement.Core.Entities.Auth;
 using EnterpriseManagement.Core.Interfaces.Auth;
 using EnterpriseManagement.Core.Interfaces.IRepositories;
+using EnterpriseManagement.Core.Interfaces.IServices;
 using EnterpriseManagement.Infrastructure.Persistence;
 using EnterpriseManagement.Infrastructure.Repositories;
 using EnterpriseManagement.Infrastructure.Services;
@@ -16,7 +17,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+}); ;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -72,9 +76,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+
+
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<IJwtService, JwtService>();
 
 
 var app = builder.Build();

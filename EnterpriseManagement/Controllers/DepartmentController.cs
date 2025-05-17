@@ -1,5 +1,6 @@
 ﻿using EnterpriseManagement.Core.Entities.General;
 using EnterpriseManagement.Core.Interfaces.IRepositories;
+using EnterpriseManagement.Core.Interfaces.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,16 +10,21 @@ namespace EnterpriseManagement.API.Controllers
     [Route("api/[controller]")]
     public class DepartmentController : BaseController
     {
-        public DepartmentController(IUnitOfWork unitOfWork) : base(unitOfWork) { }
+        private readonly IDepartmentService _departmentService;
+
+        public DepartmentController(IDepartmentService departmentService)
+        {
+            _departmentService = departmentService;
+        }
 
         /// <summary>
         /// Obtiene todos los departamentos.
         /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllDepartments()
         {
-            var departments = await _unitOfWork.Departments.GetAllAsync();
+            var departments = await _departmentService.GetAllAsync();
             return OkResult(departments);
         }
 
@@ -30,8 +36,10 @@ namespace EnterpriseManagement.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
         {
-            var department = await _unitOfWork.Departments.GetByIdAsync(id);
-            if (department == null) return NotFoundResult(nameof(Department), id);
+            var department = await _departmentService.GetByIdAsync(id);
+            if (department == null)
+                return NotFound();
+
             return OkResult(department);
         }
 
@@ -42,9 +50,12 @@ namespace EnterpriseManagement.API.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> Create(Department department)
         {
-            await _unitOfWork.Departments.AddAsync(department);
-            await _unitOfWork.CompleteAsync();
-            return CreatedResult(nameof(GetById), new { id = department.Id }, department);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _departmentService.AddAsync(department);
+            return CreatedAtAction(nameof(GetById), new { id = department.Id }, department);
+
         }
 
         /// <summary>
@@ -55,14 +66,14 @@ namespace EnterpriseManagement.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Update(int id, Department updated)
         {
-            var department = await _unitOfWork.Departments.GetByIdAsync(id);
-            if (department == null) return NotFoundResult(nameof(Department), id);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            department.Name = updated.Name;
-            _unitOfWork.Departments.Update(department);
-            await _unitOfWork.CompleteAsync();
+            if (id != updated.Id)
+                return BadRequest("Id mismatch");
 
-            return OkResult(department);
+            await _departmentService.UpdateAsync(updated);
+            return OkResult(new { message = "Department Update successfully" });
         }
 
         /// <summary>
@@ -72,12 +83,7 @@ namespace EnterpriseManagement.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Delete(int id)
         {
-            var department = await _unitOfWork.Departments.GetByIdAsync(id);
-            if (department == null) return NotFoundResult(nameof(Department), id);
-
-            _unitOfWork.Departments.Update(department);
-            await _unitOfWork.CompleteAsync();
-
+            await _departmentService.DeleteAsync(id);
             return OkResult(new { message = "Department deleted successfully" });
         }
 
@@ -89,10 +95,9 @@ namespace EnterpriseManagement.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEmployeesByDepartment(int id)
         {
-            var department = await _unitOfWork.Departments.GetByIdAsync(id);
-            if (department == null) return NotFoundResult(nameof(Department), id);
-
-            var employees = await _unitOfWork.Employees.GetByDepartmentIdAsync(id);
+            var employees = await _departmentService.GetByDepartmentIdAsync(id);
+            if (employees == null)
+                return BadRequest("Id mismatch");
             return OkResult(employees);
         }
     }

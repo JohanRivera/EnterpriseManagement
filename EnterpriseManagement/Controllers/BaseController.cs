@@ -7,13 +7,6 @@ namespace EnterpriseManagement.API.Controllers
     [Produces("application/json")]
     public abstract class BaseController : ControllerBase
     {
-        protected readonly IUnitOfWork _unitOfWork;
-
-        protected BaseController(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
-
         // Se agregan helpers generales para los controladores
 
         protected IActionResult OkResult(object data)

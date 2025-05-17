@@ -12,7 +12,15 @@ namespace EnterpriseManagement.Infrastructure.Repositories
         {
             return await _context.Set<Employee>()
                 .Where(e => e.DepartmentId == departmentId)
-                .ToListAsync();
+                .Select(s => new Employee
+                {
+                    DepartmentId = s.DepartmentId,
+                    Name = s.Name,
+                    Salary = s.Salary,
+                    Email = s.Email,
+                    Position = s.Position,
+                    Id = s.Id
+                }).ToListAsync();
         }
     }
 }
