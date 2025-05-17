@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EnterpriseManagement.API.Controllers
 {
-    //[Authorize]
+    [Authorize]
+    [ApiController]
     [Route("api/[controller]")]
     public class EmployeeController : BaseController
     {

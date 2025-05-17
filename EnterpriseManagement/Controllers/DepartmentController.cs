@@ -1,12 +1,12 @@
 ﻿using EnterpriseManagement.Core.Entities.General;
-using EnterpriseManagement.Core.Interfaces.IRepositories;
 using EnterpriseManagement.Core.Interfaces.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnterpriseManagement.API.Controllers
 {
-    
+    [Authorize]
+    [ApiController]
     [Route("api/[controller]")]
     public class DepartmentController : BaseController
     {

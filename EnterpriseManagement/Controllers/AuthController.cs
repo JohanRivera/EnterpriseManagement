@@ -1,11 +1,13 @@
 ﻿using EnterpriseManagement.API.DTOs;
 using EnterpriseManagement.Core.Entities.Auth;
 using EnterpriseManagement.Core.Interfaces.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnterpriseManagement.API.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
@@ -34,6 +36,13 @@ namespace EnterpriseManagement.API.Controllers
 
             var token = _jwtService.GenerateToken(user);
             return Ok(new { token });
+        }
+
+        [AllowAnonymous]
+        [HttpGet("ping")]
+        public IActionResult Ping()
+        {
+            return Ok("pong");
         }
     }
 }
