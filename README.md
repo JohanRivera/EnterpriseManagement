@@ -82,3 +82,13 @@ dotnet ef database update
 dotnet run
 ```
 
+## Usuario de prueba
+
+Por defecto el usuario de prueba para realizar los consumos es:
+```json
+{
+  "username": "admin",
+  "password": "Admin123*"
+}
+```
+
