@@ -37,12 +37,5 @@ namespace EnterpriseManagement.API.Controllers
             var token = _jwtService.GenerateToken(user);
             return Ok(new { token });
         }
-
-        [AllowAnonymous]
-        [HttpGet("ping")]
-        public IActionResult Ping()
-        {
-            return Ok("pong");
-        }
     }
 }

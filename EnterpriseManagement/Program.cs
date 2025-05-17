@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,39 +72,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = false,
             ValidateAudience = false
         };
-
-        options.Events = new JwtBearerEvents
-        {
-            OnAuthenticationFailed = context =>
-            {
-                Console.WriteLine("Authentication failed:");
-                Console.WriteLine(context.Exception.ToString());
-                return Task.CompletedTask;
-            },
-            OnTokenValidated = context =>
-            {
-                Console.WriteLine("Token is valid.");
-                return Task.CompletedTask;
-            },
-            OnChallenge = context =>
-            {
-                Console.WriteLine("Unauthorized - Challenge triggered");
-                if (context.AuthenticateFailure != null)
-                {
-                    Console.WriteLine("Failure reason: " + context.AuthenticateFailure.Message);
-                }
-                return Task.CompletedTask;
-            }
-        };
     });
 builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
 
 var app = builder.Build();
@@ -130,7 +102,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
